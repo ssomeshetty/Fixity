@@ -1,1 +1,503 @@
-<h5>Issue Creation</h5>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Issue - FixOurCity</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4; /* Light background for contrast */
+            margin: 0;
+            padding: 20px;
+            padding-top: 80px; /* Added padding to prevent navbar overlap */
+        }
+
+        :root {
+            --primary-color: #6C63FF;      /* Vibrant Purple */
+            --primary-light: #8B84FF;      /* Light Purple */
+            --primary-dark: #4F46E5;       /* Deep Purple */
+            --secondary-color: #00E5B6;    /* Bright Teal */
+            --secondary-light: #4AFFCE;    /* Light Teal */
+            --accent-color: #FF9100;       /* Bright Orange */
+            --accent-light: #FFB74D;       /* Light Orange */
+            --gradient-1: linear-gradient(135deg, #6C63FF 0%, #00E5B6 100%);
+            --gradient-2: linear-gradient(135deg, #FF9100 0%, #FF4081 100%);
+            --white: #ffffff;
+            --light-gray: #F8F9FA;
+            --dark-gray: #2D3436;
+            --text-color: #333333;
+        }
+        /* Card Container */
+        .card {
+            background-color: #ffffff; /* White background for the card */
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+            padding: 20px;
+            max-width: 600px; /* Max width for large screens */
+            margin: 20px auto; /* Center align the card */
+        }
+
+        /* Card Title */
+        .card-title {
+            font-size: 24px;
+            color: #333; /* Dark text for title */
+            margin-bottom: 20px;
+        }
+
+        /* Form Group Styles */
+        .form-group {
+            margin-bottom: 15px; /* Space between form fields */
+        }
+
+        /* Label Styles */
+        .form-label {
+            display: block; /* Block display for labels */
+            font-weight: bold;
+            color: #555; /* Medium dark color for labels */
+            margin-bottom: 5px;
+        }
+
+        /* Input Field Styles */
+        input[type="text"],
+        input[type="email"],
+        input[type="file"],
+        textarea {
+            width: 100%; /* Full width for inputs */
+            padding: 10px; /* Padding for better touch targets */
+            border: 1px solid #ccc; /* Light border */
+            border-radius: 4px; /* Slight rounding */
+            box-sizing: border-box; /* Box model fix */
+        }
+
+        /* Error Message Style */
+        .message.message-error {
+            color: #ff4d4d; /* Red color for errors */
+            margin-top: 5px; /* Space above error message */
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-block; /* Inline for button layout */
+            background-color: #007bff; /* Primary button color */
+            color: white; /* Text color */
+            padding: 10px 20px; /* Button padding */
+            border: none;
+            border-radius: 4px; /* Rounding for buttons */
+            cursor: pointer; /* Pointer cursor on hover */
+        }
+
+        /* Button Hover Effect */
+        .btn:hover {
+            background-color: #0056b3; /* Darken on hover */
+        }
+
+        /* Map container */
+        #map {
+            height: 300px;
+            width: 100%;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        /* Location search results */
+        #location-results {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .location-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .location-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Current location button */
+        #get-current-location {
+            display: inline-block;
+            margin-bottom: 10px;
+            background-color: #28a745;
+        }
+
+        #get-current-location:hover {
+            background-color: #218838;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            .card {
+                padding: 15px; /* Adjust padding for smaller screens */
+            }
+            .card-title {
+                font-size: 20px; /* Decrease title size */
+            }
+            .btn {
+                width: 100%; /* Full-width buttons on smaller screens */
+            }
+        }
+
+        /* Enhanced Navbar */
+        .navbar {
+            background: var(--gradient-1);
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.2);
+            transition: all 0.3s ease;
+            padding: 15px 0;
+            animation: slideInFromTop 0.8s ease-out;
+            
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--white) !important;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .navbar-brand i {
+            font-size: 1.8rem;
+            margin-right: 8px;
+            color: var(--accent-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .nav-link {
+            font-weight: 500;
+            padding: 8px 15px !important;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            color: var(--white) !important;
+            position: relative;
+        }
+
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover:after {
+            width: 80%;
+            left: 10%;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+        }  
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-city me-2"></i>FixOurCity
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'create_issue' %}"><i class="fas fa-plus-circle me-1"></i>Report Issue</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'view_issues' %}"><i class="fas fa-list me-1"></i>View Issues</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user me-1"></i>Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-1"></i>Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="card">
+        <h2 class="card-title">Report New Issue</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Title and Description -->
+            <div class="form-group">
+                <label class="form-label">{{ form.title.label }}</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="message message-error">
+                        {{ form.title.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">{{ form.description.label }}</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="message message-error">
+                        {{ form.description.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Location Section -->
+            <div class="form-group">
+                <label class="form-label">Location</label>
+                <button type="button" id="get-current-location" class="btn btn-sm mb-2">
+                    <i class="fas fa-map-marker-alt me-1"></i>Use My Current Location
+                </button>
+                
+                <input type="text" id="location-search" class="form-control" placeholder="Search for a location" autocomplete="off">
+                <div id="location-results"></div>
+                
+                <!-- Map for selecting location -->
+                <div id="map"></div>
+                
+                <!-- Hidden fields that will be submitted with the form -->
+                <input type="hidden" name="address" id="address-field" value="{{ form.address.value|default:'' }}">
+                <input type="hidden" name="latitude" id="latitude-field" value="{{ form.latitude.value|default:'' }}">
+                <input type="hidden" name="longitude" id="longitude-field" value="{{ form.longitude.value|default:'' }}">
+                <input type="hidden" name="location" id="location-json-field" value="">
+                
+                {% if form.address.errors or form.latitude.errors or form.longitude.errors %}
+                    <div class="message message-error">
+                        Please select a valid location
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+    <label class="form-label">Responsible Authority</label>
+    {% if form.government_authority.value %}
+        <p>Detected Authority: {{ form.government_authority.value }}</p>
+    {% else %}
+        <p>No authority automatically detected. Please select one:</p>
+    {% endif %}
+    {{ form.government_authority }}
+    {% if form.government_authority.errors %}
+        <div class="message message-error">
+            {{ form.government_authority.errors }}
+        </div>
+    {% endif %}
+</div>
+            
+            <!-- Image field -->
+            <div class="form-group">
+                <label for="image">Upload Image</label>
+                <input type="file" name="image" accept="image/*" class="form-control">
+            </div>
+
+            <button type="submit" class="btn">Submit Issue</button>
+        </form>
+    </div>
+
+    <!-- JS Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize map with default center (can be changed to your city's coordinates)
+            const map = L.map('map').setView([40.7128, -74.0060], 13);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Initialize marker variable
+            let marker;
+            
+            // Function to update form fields with location data
+            function updateLocationFields(lat, lng, displayName, fullData = {}) {
+                document.getElementById('latitude-field').value = lat;
+                document.getElementById('longitude-field').value = lng;
+                document.getElementById('address-field').value = displayName;
+                
+                // Store complete location data as JSON
+                const locationData = {
+                    latitude: lat,
+                    longitude: lng,
+                    address: displayName,
+                    ...fullData
+                };
+                document.getElementById('location-json-field').value = JSON.stringify(locationData);
+                
+                // Update or create marker
+                if (marker) {
+                    marker.setLatLng([lat, lng]);
+                } else {
+                    marker = L.marker([lat, lng]).addTo(map);
+                }
+                
+                // Center map on marker
+                map.setView([lat, lng], 16);
+            }
+            
+            // Handle map clicks to set location
+            map.on('click', function(e) {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                
+                // Reverse geocode to get address
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.display_name) {
+                            updateLocationFields(lat, lng, data.display_name, data);
+                        }
+                    })
+                    .catch(error => console.error('Error reverse geocoding:', error));
+            });
+            
+            // Location search functionality
+            const searchInput = document.getElementById('location-search');
+            const resultsContainer = document.getElementById('location-results');
+            
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                if (query.length < 3) {
+                    resultsContainer.style.display = 'none';
+                    return;
+                }
+                
+                // Search using Nominatim
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`)
+                    .then(response => response.json())
+                    .then(data => {
+                        resultsContainer.innerHTML = '';
+                        
+                        if (data && data.length > 0) {
+                            data.forEach(item => {
+                                const resultItem = document.createElement('div');
+                                resultItem.className = 'location-item';
+                                resultItem.textContent = item.display_name;
+                                resultItem.addEventListener('click', function() {
+                                    updateLocationFields(
+                                        parseFloat(item.lat), 
+                                        parseFloat(item.lon), 
+                                        item.display_name,
+                                        item
+                                    );
+                                    searchInput.value = item.display_name;
+                                    resultsContainer.style.display = 'none';
+                                });
+                                resultsContainer.appendChild(resultItem);
+                            });
+                            resultsContainer.style.display = 'block';
+                        } else {
+                            resultsContainer.style.display = 'none';
+                        }
+                    })
+                    .catch(error => console.error('Error searching locations:', error));
+            });
+            
+            // Handle "Use My Current Location" button
+            document.getElementById('get-current-location').addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            
+                            // Reverse geocode to get address
+                            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data && data.display_name) {
+                                        updateLocationFields(lat, lng, data.display_name, data);
+                                        searchInput.value = data.display_name;
+                                    }
+                                })
+                                .catch(error => console.error('Error reverse geocoding:', error));
+                        },
+                        function(error) {
+                            alert('Error getting your location: ' + error.message);
+                        }
+                    );
+                } else {
+                    alert('Geolocation is not supported by your browser');
+                }
+            });
+            
+            // Close search results when clicking outside
+            document.addEventListener('click', function(e) {
+                if (e.target !== searchInput && e.target !== resultsContainer) {
+                    resultsContainer.style.display = 'none';
+                }
+            });
+            
+            // Try to get user's location on page load to center the map
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        map.setView([position.coords.latitude, position.coords.longitude], 13);
+                    },
+                    function(error) {
+                        console.log('Error getting initial location:', error.message);
+                    }
+                );
+            }
+            
+            // If we have pre-filled values (for edit form), use them
+            const lat = document.getElementById('latitude-field').value;
+            const lng = document.getElementById('longitude-field').value;
+            const address = document.getElementById('address-field').value;
+            
+            if (lat && lng && address) {
+                updateLocationFields(parseFloat(lat), parseFloat(lng), address);
+                searchInput.value = address;
+            }
+        });
+            document.addEventListener('DOMContentLoaded', function() {
+        // Debug the authority detection
+        console.log("Form loaded and ready for submission");
+        
+        const titleInput = document.querySelector('input[name="title"]');
+        const form = document.querySelector('form');
+        
+        if (titleInput && form) {
+            // Log title changes for debugging
+            titleInput.addEventListener('input', function() {
+                console.log("Title changed to:", this.value);
+            });
+            
+            // Log form submission
+            form.addEventListener('submit', function(e) {
+                console.log("Form being submitted with title:", titleInput.value);
+            });
+        }
+    });
+    </script>
+</body>
+</html>

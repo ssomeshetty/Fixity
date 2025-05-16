@@ -1393,7 +1393,7 @@
                             <i class="fas fa-trophy mr-1"></i> Contractor Leaderboard
                         </a>
                     </li>
-                    <li class="nav-item"><a class="nav-link btn btn-outline-light ms-2" href="{% url 'login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-accent ms-2" href="{% url 'login' %}">Login</a></li>
                     <li class="nav-item"><a class="nav-link btn btn-accent ms-2" href="{% url 'register' %}">Register</a></li>
                 </ul>
             </div>
@@ -1405,7 +1405,7 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 hero-content" data-aos="fade-right">
-                    <h1 class="hero-title">Transform Your Pink City Together</h1>
+                    <h1 class="hero-title">Transform Your beloved City Together</h1>
                     <p class="hero-subtitle">Report, track, and solve urban infrastructure issues in your community. Join thousands of citizens making their neighborhoods better places to live.</p>
                     <div class="d-flex gap-3 flex-wrap">
                         <a href="{% url 'register' %}" class="btn btn-accent btn-lg">Get Started <i class="fas fa-arrow-right ms-2"></i></a>
@@ -1417,6 +1417,7 @@
             </div>
         </div>
     </section>
+
 
     <!-- Stats Section -->
     <section class="stats-section">
@@ -1682,7 +1683,108 @@
     </section>
 
 
+    <!-- Process Steps -->
+    <section class="py-5 bg-light">
+        <div class="container py-5">
+            <h2 class="text-center section-title" data-aos="fade-up">Our Process</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="row g-4">
+                        <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+                            <div class="card border-0 bg-transparent text-center">
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px; font-size: 2rem; font-weight: 700;">1</div>
+                                <div class="card-body">
+                                    <h4 class="card-title h5">Report Issue</h4>
+                                    <p class="card-text text-muted">Submit details and photos of the infrastructure problem you've encountered.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+                            <div class="card border-0 bg-transparent text-center">
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px; font-size: 2rem; font-weight: 700;">2</div>
+                                <div class="card-body">
+                                    <h4 class="card-title h5">Verification</h4>
+                                    <p class="card-text text-muted">City authorities review and verify the reported issue within 48 hours.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+                            <div class="card border-0 bg-transparent text-center">
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px; font-size: 2rem; font-weight: 700;">3</div>
+                                <div class="card-body">
+                                    <h4 class="card-title h5">Assignment</h4>
+                                    <p class="card-text text-muted">The issue is assigned to the appropriate contractor for resolution.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+                            <div class="card border-0 bg-transparent text-center">
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px; font-size: 2rem; font-weight: 700;">4</div>
+                                <div class="card-body">
+                                    <h4 class="card-title h5">Resolution</h4>
+                                    <p class="card-text text-muted">Problem fixed and verified with before/after documentation.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <!-- Testimonials Section -->
+    <section class="testimonial-section" id="testimonials">
+        <div class="container py-5">
+            <h2 class="text-center section-title" data-aos="fade-up">What Our Users Say</h2>
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="testimonial-card text-center">
+                        <img src='{% static "images/mohan.jpeg" %}' alt="User Avatar" class="testimonial-avatar mx-auto">
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">"I reported a dangerous pothole on my street and it was fixed within 3 days! The app made it so easy to submit the issue with photos and track the progress."</p>
+                        <h5 class="testimonial-author">Mohana Das</h5>
+                        <p class="testimonial-location">Resident, Bengaluru</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-card text-center">
+                        <img src='{% static "images/nikhil.jpg" %}' alt="User Avatar" class="testimonial-avatar mx-auto">
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p class="testimonial-text">"As a city official, this platform has revolutionized how we manage infrastructure issues. The data analytics help us prioritize resources effectively."</p>
+                        <h5 class="testimonial-author">Nikhil</h5>
+                        <p class="testimonial-location">BBMP Bengaluru</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="testimonial-card text-center">
+                        <img src='{% static "images/narayan.jpeg" %}' alt="User Avatar" class="testimonial-avatar mx-auto">
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">"Our maintenance team is now much more efficient thanks to FixOurCity. The detailed reports with exact locations and photos save us valuable time in the field."</p>
+                        <h5 class="testimonial-author">Narayan</h5>
+                        <p class="testimonial-location">Contractor</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Call to Action Section -->
     <section class="cta-section">

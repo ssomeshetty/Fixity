@@ -1,1 +1,946 @@
-<h5>Issue detailed</h5>
+{% load customfilters %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>{{ issue.title }} - FixOurCity</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <style>
+        /* Keep all the original CSS styles here */
+        /* ... (original CSS styles from the first template) ... */
+         :root {
+            --primary: #4a148c;
+            --primary-light: #7c43bd;
+            --primary-dark: #12005e;
+            --secondary: #ff4081;
+            --secondary-light: #ff79b0;
+            --secondary-dark: #c60055;
+            --success: #00c853;
+            --warning: #ffd600;
+            --danger: #d50000;
+            --info: #00b0ff;
+            --neutral: #f5f5f5;
+            --neutral-dark: #e0e0e0;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-light: #999999;
+            --primary-color: #6C63FF;      /* Vibrant Purple */
+            --primary-light: #8B84FF;      /* Light Purple */
+            --primary-dark: #4F46E5;       /* Deep Purple */
+            --secondary-color: #00E5B6;    /* Bright Teal */
+            --secondary-light: #4AFFCE;    /* Light Teal */
+            --accent-color: #FF9100;       /* Bright Orange */
+            --accent-light: #FFB74D;       /* Light Orange */
+            --gradient-1: linear-gradient(135deg, #6C63FF 0%, #00E5B6 100%);
+            --gradient-2: linear-gradient(135deg, #FF9100 0%, #FF4081 100%);
+            --white: #ffffff;
+            --light-gray: #F8F9FA;
+            --dark-gray: #2D3436;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        /* Enhanced Navbar */
+        .navbar {
+            background: var(--gradient-1);
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.2);
+            transition: all 0.3s ease;
+            padding: 15px 0;
+            animation: slideInFromTop 0.8s ease-out;
+            
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--white) !important;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .navbar-brand i {
+            font-size: 1.8rem;
+            margin-right: 8px;
+            color: var(--accent-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .nav-link {
+            font-weight: 500;
+            padding: 8px 15px !important;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            color: var(--white) !important;
+            position: relative;
+        }
+
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover:after {
+            width: 80%;
+            left: 10%;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+        }  
+
+
+        /* Main Content */
+        .main-container {
+            padding: 1rem;
+            margin-top: 76px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Issue Detail Card */
+        .issue-detail-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 992px) {
+            .issue-detail-container {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        /* Main Issue Card */
+        .issue-main-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .issue-main-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
+
+        .issue-header {
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            height: 250px;
+            background-color: var(--primary-light);
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .issue-header:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 50%);
+            z-index: 1;
+        }
+
+        .issue-header-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 2rem 1.5rem 1rem;
+            color: white;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        
+        .issue-main-card:hover .issue-header-overlay {
+            padding-bottom: 1.5rem;
+        }
+
+        .issue-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .issue-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .issue-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .issue-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+
+        .status-new {
+            background-color: var(--info);
+            color: white;
+        }
+
+        .status-pending {
+            background-color: var(--warning);
+            color: #333;
+        }
+
+        .status-completed {
+            background-color: var(--success);
+            color: white;
+        }
+
+        /* Issue Content */
+        .issue-body {
+            padding: 1.5rem;
+        }
+
+        .issue-description {
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+        }
+
+        /* Issue Media */
+        .issue-media {
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .issue-media img {
+            width: 100%;
+            transition: all 0.4s ease;
+        }
+
+        .issue-media img:hover {
+            transform: scale(1.03);
+        }
+
+        /* Actions Section */
+        .issue-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--neutral);
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .action-btn {
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .action-btn:hover {
+            background-color: var(--neutral);
+            transform: translateY(-2px);
+        }
+
+        .upvote-btn:hover, .upvote-btn.active {
+            background-color: rgba(255, 64, 129, 0.1);
+            color: var(--secondary);
+        }
+
+        .share-btn:hover {
+            background-color: rgba(0, 176, 255, 0.1);
+            color: var(--info);
+        }
+
+        .report-btn:hover {
+            background-color: rgba(213, 0, 0, 0.1);
+            color: var(--danger);
+        }
+
+        /* Info Cards */
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .info-card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-card-title i {
+            color: var(--secondary);
+        }
+
+        /* Location Info */
+        .location-map {
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 1rem;
+            height: 200px;
+            background-color: var(--neutral);
+            position: relative;
+        }
+
+        .map-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+        }
+
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-item {
+            padding: 1rem;
+            background-color: var(--neutral);
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin-top: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            bottom: 8px;
+            width: 3px;
+            background: var(--primary-light);
+            border-radius: 3px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--secondary);
+            border: 2px solid white;
+        }
+
+        .timeline-date {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-content {
+            font-size: 0.95rem;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            margin-top: 2rem;
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .comments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .comments-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .comment-card {
+            border-bottom: 1px solid var(--neutral);
+            padding: 1.2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comment-card:hover {
+            background-color: rgba(0,0,0,0.01);
+        }
+        
+        .comment-card:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--primary-light), var(--secondary));
+            transition: width 0.4s ease;
+        }
+        
+        .comment-card:hover:after {
+            width: 100%;
+        }
+
+        .comment-card:last-child {
+            border-bottom: none;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            margin-right: 0.8rem;
+        }
+
+        .comment-user {
+            font-weight: 600;
+        }
+
+        .comment-time {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-left: 0.8rem;
+        }
+
+        .comment-text {
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.8rem;
+        }
+
+        .comment-action-btn {
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            padding: 5px 0;
+            transition: all 0.2s ease;
+        }
+
+        .comment-action-btn:hover {
+            color: var(--primary);
+        }
+
+        /* Comment Form */
+        .comment-form {
+            margin-top: 1.5rem;
+            position: relative;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-radius: 30px;
+            border: 1px solid var(--neutral-dark);
+            background-color: var(--neutral);
+            outline: none;
+            transition: all 0.3s ease;
+            padding-right: 60px;
+        }
+
+        .comment-input:focus {
+            border-color: var(--primary-light);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(124, 67, 189, 0.1);
+        }
+
+        .comment-submit-btn {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .comment-submit-btn:hover {
+            background-color: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        /* Animations */
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.6s ease-in-out;
+        }
+
+        .animate-slide-left {
+            animation: slideLeft 0.6s ease-in-out;
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideLeft {
+            from { transform: translateX(30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .issue-title {
+                font-size: 1.5rem;
+            }
+
+            .issue-meta {
+                gap: 1rem;
+            }
+
+            .issue-header {
+                height: 200px;
+            }
+
+            .issue-actions {
+                justify-content: center;
+                gap: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .main-container {
+                padding: 2rem;
+            }
+
+            .info-section {
+                position: sticky;
+                top: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-city me-2"></i>FixOurCity
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.role == 'public' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'create_issue' %}"><i class="fas fa-plus-circle me-1"></i>Report Issue</a>
+                    </li>
+                    {% elif user.role == 'authority' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'authority_dashboard' %}"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a>
+                    </li>
+                    {% elif user.role == 'contractor' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contractor_dashboard' %}"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user me-1"></i>Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-1"></i>Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="mb-4">
+            <a href="{% url 'view_issues' %}" class="btn btn-outline-primary rounded-pill">
+                <i class="fas fa-arrow-left me-2"></i>Back to Issues
+            </a>
+        </div>
+
+        <div class="issue-detail-container">
+            <!-- Main Issue Content -->
+            <div class="animate-fade-in">
+                <div class="issue-main-card" data-aos="fade-up">
+                    <!-- Issue Header -->
+                    <div class="issue-header" style="background-image: url({% if issue.images.first %}{{ issue.images.first.image.url }}{% else %}{% static 'images/default-issue.jpg' %}{% endif %});">
+                        <div class="issue-header-overlay">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="issue-status status-{{ issue.status|lower }}">
+                                    <i class="fas fa-{{ issue.status|status_icon }} me-1"></i>{{ issue.get_status_display }}
+                                </span>
+                                <span class="text-white"><i class="far fa-clock me-1"></i>{{ issue.created_at|date:"F d, Y" }}</span>
+                            </div>
+                            <h1 class="issue-title">{{ issue.title }}</h1>
+                            <div class="issue-meta">
+                                <div class="issue-meta-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>{{ issue.reported_by.username }}</span>
+                                </div>
+                                <div class="issue-meta-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ issue.address }}</span>
+                                </div>
+                                <div class="issue-meta-item">
+                                    <i class="fas fa-tag"></i>
+                                    <span>{{ issue.category.name }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Issue Body -->
+                    <div class="issue-body">
+                        <p class="issue-description" data-aos="fade-up" data-aos-delay="100">{{ issue.description }}</p>
+
+                        <!-- Issue Media -->
+                        {% if issue.images.all %}
+                        <div class="issue-media" data-aos="fade-up" data-aos-delay="200">
+                            <div class="row">
+                                {% for image in issue.images.all %}
+                                <div class="col-md-4 mb-3">
+                                    <img src="{{ image.image.url }}" alt="Issue Image" class="img-fluid rounded-3">
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Issue Actions -->
+                        <div class="issue-actions" data-aos="fade-up" data-aos-delay="300">
+                            <div>
+                                <div class="upvote-section">
+                                    <span id="upvotes-count" class="h5 mb-0">{{ issue.upvotes_count }} upvotes</span>
+                                    {% if user.is_authenticated %}
+                                        <button class="upvote-btn" onclick="upvoteIssue({{ issue.id }})" id="upvote-button">
+                                            <i class="fas fa-arrow-up"></i>
+                                            {% if user in issue.upvotes.all %}
+                                                Remove Upvote
+                                            {% else %}
+                                                Upvote
+                                            {% endif %}
+                                        </button>
+                                    {% endif %}
+                                </div>
+
+                                <button class="action-btn share-btn">
+                                    <i class="fas fa-share-alt"></i>
+                                    <span>Share</span>
+                                </button>
+                            </div>
+                            {% if user.is_authenticated %}
+                            <button class="action-btn report-btn">
+                                <i class="fas fa-flag"></i>
+                                <span>Report</span>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="comments-section" data-aos="fade-up" data-aos-delay="400">
+                    <div class="comments-header">
+                        <h3 class="comments-title"><i class="far fa-comments me-2"></i>Community Discussion</h3>
+                        <span class="badge bg-primary rounded-pill">{{ comments.count }} Comments</span>
+                    </div>
+
+                    <!-- Comments List -->
+                    <div class="comments-list">
+                        {% for comment in comments %}
+                        <div class="comment-card">
+                            <div class="comment-header">
+                                <div class="comment-avatar">{{ comment.user.username|first|upper }}</div>
+                                <div>
+                                    <div class="comment-user">{{ comment.user.username }}</div>
+                                    <span class="comment-time">{{ comment.created_at|timesince }} ago</span>
+                                </div>
+                            </div>
+                            <div class="comment-text">
+                                {{ comment.content }}
+                            </div>
+                            <div class="comment-actions">
+                                <button class="comment-action-btn">
+                                    <i class="far fa-thumbs-up me-1"></i>Like ({{ comment.likes.count }})
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Comment Form -->
+                    {% if user.is_authenticated %}
+                    <div class="comment-form">
+                        <form method="post" id="comment-form">
+                            {% csrf_token %}
+                                <!-- Change this line in issue_detail.html -->
+                                <input type="text" name="content" class="comment-input" placeholder="Add your comment..." required>                            <button type="submit" class="comment-submit-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if issue.status == 'completed' and issue.contractor %}
+                    <div class="rate-section">
+                        <a href="{% url 'rate_contractor' issue.id %}" class="btn btn-warning">
+                            {% if user_has_rated %}Update Rating{% else %}Rate Contractor{% endif %}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar Info Section -->
+            <div class="info-section">
+                <!-- Status Card -->
+                <div class="info-card" data-aos="fade-left" data-aos-delay="100">
+                    <h3 class="info-card-title"><i class="fas fa-info-circle"></i>Issue Status</h3>
+                    <div class="progress mb-3" style="height: 10px;">
+                        <div class="progress-bar bg-{{ issue.status|status_color }} progress-bar-striped" 
+                             role="progressbar" 
+                             style="width: {{ issue.status|status_progress }}%;"
+                             aria-valuenow="{{ issue.status|status_progress }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            <span class="position-absolute" style="top: -25px; right: 0; font-size: 12px;">
+                                {{ issue.status|status_progress }}%
+                            </span>
+                        </div>
+                    </div>
+                    <p>{{ issue.status|status_description }}</p>
+                </div>
+
+                <!-- Statistics Card -->
+                <div class="info-card" data-aos="fade-left" data-aos-delay="300">
+                    <h3 class="info-card-title"><i class="fas fa-chart-bar"></i>Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value">{{ issue.upvotes.count }}</span>
+                            <span class="stat-label">Upvotes</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">{{ comments.count }}</span>
+                            <span class="stat-label">Comments</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">{{ issue.views }}</span>
+                            <span class="stat-label">Views</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">{{ issue.created_at|timesince }}</span>
+                            <span class="stat-label">Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Card -->
+                <div class="info-card" data-aos="fade-left" data-aos-delay="400">
+                    <h3 class="info-card-title"><i class="fas fa-history"></i>Timeline</h3>
+                    <div class="timeline">
+                        {% for event in issue.history.all %}
+                        <div class="timeline-item">
+                            <div class="timeline-date">{{ event.timestamp|date:"F d, Y" }}</div>
+                            <div class="timeline-content">{{ event.get_status_display }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        function upvoteIssue(issueId) {
+                fetch(`/issues/upvote/${issueId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('upvotes-count').textContent = `${data.upvotes_count} upvotes`;
+                    const btn = document.querySelector('.upvote-btn');
+                    if (data.action === 'added') {
+                        btn.innerHTML = '<i class="fas fa-arrow-up"></i> Remove Upvote';
+                    } else {
+                        btn.innerHTML = '<i class="fas fa-arrow-up"></i> Upvote';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        AOS.init();
+
+        // Comment form submission
+        document.getElementById('comment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            const response = await fetch('{% url "add_comment" issue.id %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    </script>
+
+</body>
+</html>
